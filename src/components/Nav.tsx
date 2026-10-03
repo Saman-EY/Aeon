@@ -1,51 +1,52 @@
+import { Link } from 'react-router-dom'
 import { nav } from '../data/content'
 
 export function Nav({ active = '' }: { active?: string }) {
   return (
-    <nav class="nav" id="site-nav" aria-label="Primary">
-      <div class="container nav__inner">
-        <a href="/" class="nav__mark" aria-label="AEON — Home">
-          <span class="nav__mark-dot" aria-hidden="true"></span>
+    <nav className="nav" id="site-nav" aria-label="Primary">
+      <div className="container nav__inner">
+        <Link to="/" className="nav__mark" aria-label="AEON — Home">
+          <span className="nav__mark-dot" aria-hidden="true"></span>
           AEON
-        </a>
+        </Link>
 
-        <ul class="nav__links" role="list">
+        <ul className="nav__links" role="list">
           {nav.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class={`nav__link${active === item.href ? ' is-active' : ''}`}
+            <li key={item.href}>
+              <Link
+                to={item.href}
+                className={`nav__link${active === item.href ? ' is-active' : ''}`}
                 aria-current={active === item.href ? 'page' : undefined}
               >
                 {item.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
-        <a href="/contact" class="nav__cta">
+        <Link to="/contact" className="nav__cta">
           Begin a conversation
-        </a>
+        </Link>
 
-        <button class="nav__toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-mobile">
+        <button className="nav__toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-mobile">
           <span></span><span></span><span></span>
         </button>
       </div>
 
-      <div class="nav__mobile" id="nav-mobile">
-        <ul class="nav__mobile-links" role="list">
+      <div className="nav__mobile" id="nav-mobile">
+        <ul className="nav__mobile-links" role="list">
           {nav.map((item, i) => (
-            <li>
-              <a href={item.href}>
+            <li key={item.href}>
+              <Link to={item.href}>
                 {item.label}
-                <span class="idx">{String(i + 1).padStart(2, '0')}</span>
-              </a>
+                <span className="idx">{String(i + 1).padStart(2, '0')}</span>
+              </Link>
             </li>
           ))}
         </ul>
-        <a href="/contact" class="btn btn--primary" style="align-self:flex-start;">
+        <Link to="/contact" className="btn btn--primary" style={{ alignSelf: 'flex-start' }}>
           Begin a conversation
-        </a>
+        </Link>
       </div>
     </nav>
   )

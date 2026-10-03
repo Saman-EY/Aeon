@@ -1,47 +1,64 @@
+import { Link } from 'react-router-dom'
 import { footerLinks, site } from '../data/content'
+
+// Internal links use React Router; mailto: links stay as plain anchors.
+function FooterLink({ href, label }: { href: string; label: string }) {
+  if (href.startsWith('mailto:')) {
+    return (
+      <a href={href} className="footer__link">
+        {label}
+      </a>
+    )
+  }
+  return (
+    <Link to={href} className="footer__link">
+      {label}
+    </Link>
+  )
+}
 
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer class="footer border-t" id="contact">
-      <div class="container">
-        <div class="footer__grid">
+    <footer className="footer border-t" id="contact">
+      <div className="container">
+        <div className="footer__grid">
           <div>
-            <a href="/" class="nav__mark" style="margin-bottom:18px; display:inline-flex;">
-              <span class="nav__mark-dot" aria-hidden="true"></span>
+            <Link to="/" className="nav__mark" style={{ marginBottom: '18px', display: 'inline-flex' }}>
+              <span className="nav__mark-dot" aria-hidden="true"></span>
               AEON
-            </a>
-            <p class="type-body" style="max-width:34ch; margin-top:18px;">
+            </Link>
+            <p className="type-body" style={{ maxWidth: '34ch', marginTop: '18px' }}>
               A financial and technology holding company building the systems
               behind better decisions.
             </p>
           </div>
 
           <div>
-            <p class="footer__col-title">Ecosystem</p>
+            <p className="footer__col-title">Ecosystem</p>
             {footerLinks.ecosystem.map((l) => (
-              <a href={l.href} class="footer__link">{l.label}</a>
+              <FooterLink key={l.href} href={l.href} label={l.label} />
             ))}
           </div>
 
           <div>
-            <p class="footer__col-title">Company</p>
+            <p className="footer__col-title">Company</p>
             {footerLinks.company.map((l) => (
-              <a href={l.href} class="footer__link">{l.label}</a>
+              <FooterLink key={l.href} href={l.href} label={l.label} />
             ))}
           </div>
 
           <div>
-            <p class="footer__col-title">Connect</p>
+            <p className="footer__col-title">Connect</p>
             {footerLinks.connect.map((l) => (
-              <a href={l.href} class="footer__link">{l.label}</a>
+              <FooterLink key={l.href} href={l.href} label={l.label} />
             ))}
           </div>
         </div>
 
-        <div class="footer__bottom">
+        <div className="footer__bottom">
           <span>© {year} {site.legalName}. All rights reserved.</span>
-          <span class="type-mono">Registered holding entity · Jurisdiction on request</span>
+          <span className="type-mono">Registered holding entity · Jurisdiction on request</span>
         </div>
       </div>
     </footer>

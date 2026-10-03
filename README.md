@@ -15,7 +15,7 @@
   spacing/motion tokens), reusable component classes (nav, buttons, cards,
   insight rows, ecosystem diagram, footer, form fields), scroll-reveal motion
   system with `prefers-reduced-motion` support.
-- **Pages** (Hono JSX, server-rendered):
+- **Pages** (React 19 + React Router v7, client-rendered):
   - `/` — Home: hero narrative, institutional introduction, philosophy
     statement moment, ecosystem preview, capabilities grid, insights preview,
     final CTA.
@@ -30,35 +30,35 @@
     footer.
   - `/contact` — contact form (client-validated + server-validated) wired to
     `/api/contact`.
-- **API**: `POST /api/contact` validates input and persists inquiries to
-  Cloudflare D1 (`inquiries` table); `/robots.txt` and `/sitemap.xml` are
-  generated dynamically.
+- **Contact form**: client-validated and submitted (via `src/lib/interactions.ts`)
+  to a configurable endpoint (`VITE_CONTACT_ENDPOINT`, default `/api/contact`).
+  No server is bundled — point it at your own API or a form service.
 - **SEO**: per-page `<title>`, meta description, canonical URL, Open Graph +
   Twitter card metadata, generated OG image (`/static/og.jpg`), semantic
   heading hierarchy throughout.
 - **Accessibility**: skip-link, visible focus states, `aria-live` form status,
   keyboard-operable ecosystem diagram nodes, reduced-motion support,
   sufficient contrast on the dark palette.
-- **Motion/interaction** (`public/static/app.js`, vanilla JS, no framework):
+- **Motion/interaction** (`src/lib/interactions.ts`, vanilla TS, no framework,
+  re-armed after every client-side route change):
   scroll-based nav state, mobile menu, scroll-progress bar, IntersectionObserver
   reveal animations, restrained custom cursor (desktop only), interactive
   ecosystem diagram node/detail switching, async contact form submission.
-- **Data layer**: Cloudflare D1 (`webapp-production` binding `DB`), migration
-  in `migrations/0001_initial_schema.sql`, applied locally.
+- **Data layer**: none bundled — the former Cloudflare D1 (`inquiries`) storage
+  was removed together with the Hono/Workers backend.
 - **Content** (`src/data/content.ts`): single source of truth for all copy —
   no fabricated clients, revenue, partnerships, or certifications; ecosystem,
   thesis, capabilities, about, and insights content all live here for easy
   editing.
 
 ## URLs
-- **Local dev (sandbox)**: served on port 3000 via `wrangler pages dev` + PM2.
+- **Local dev**: `npm run dev` — Vite dev server on port 3000 (with HMR).
+- **Preview**: `npm run preview` — serves the built `dist/` on port 3000.
 - **Production**: not yet deployed — see "Next Steps."
 
 ## Data Architecture
-- **Model**: `inquiries` (id, name, email, organization, topic, message,
-  created_at) — Cloudflare D1 / SQLite.
-- **Storage service**: Cloudflare D1, binding `DB`, database name
-  `webapp-production`.
+- **Contact model**: previously `inquiries` (id, name, email, organization,
+  topic, message, created_at) in Cloudflare D1 — removed with the server backend.
 - **Content model**: static TypeScript data module (`src/data/content.ts`)
   driving all pages — no CMS at this stage.
 
@@ -68,21 +68,20 @@
    entity (Axis, Sentinel, Aegis, Financial Infrastructure).
 3. Visit `/thesis` for the full philosophical argument.
 4. Visit `/insights` for editorial commentary, or open any article.
-5. Visit `/contact` to submit an inquiry — it is validated and stored.
+5. Visit `/contact` to submit an inquiry — it is client-validated and posted to
+   the configured endpoint.
 
 ## Features Not Yet Implemented
-- Production Cloudflare deployment (see below).
+- Production deployment (static host — see below).
 - CMS-backed Insights (currently static content in `content.ts`).
-- Admin view of submitted inquiries (data is stored in D1 but has no UI).
+- Admin/export view of inquiries (requires wiring a backend to the form).
 - Automated screenshot/visual regression testing (Playwright install timed
   out in this sandbox session; manual `curl` route testing was used instead).
 
 ## Recommended Next Steps
-1. **Deploy**: three deploy paths are available (Cloudflare via your own
-   account/BYOK, Genspark-hosted Cloudflare, or a Genspark Design handoff —
-   not applicable here). Confirm which path you want and it can be run in the
-   next turn — deploy was intentionally not run yet since more than one path
-   was available and this requires your choice per policy.
+1. **Deploy**: run `npm run build` and publish `dist/` to any static host
+   (configure an SPA fallback to `index.html`). No server or Cloudflare
+   account is required.
 2. Do a final visual QA pass with real browser screenshots (device widths:
    390px, 768px, 1440px) once Playwright/Chromium can be installed without
    network timeout, to confirm pixel-level spacing/hierarchy.
@@ -92,8 +91,9 @@
    act on contact submissions directly from the site.
 
 ## Deployment
-- **Platform**: Cloudflare Pages (Hono + Vite)
-- **Status**: ❌ Not yet deployed (local dev verified working)
-- **Tech Stack**: Hono (JSX SSR) + TypeScript + Vite + Cloudflare D1 + vanilla
-  CSS/JS (no client framework, no CSS framework — custom design system)
-- **Last Updated**: 2026-08-23
+- **Stack**: React 19 + React Router v7 + TypeScript + Vite (client-side SPA).
+- **Build output**: `dist/` — deploy as a static site on any static host.
+- **SPA fallback**: configure the host to rewrite unknown paths to
+  `/index.html` so deep links (e.g. `/ecosystem`, `/insights/:slug`) resolve.
+- **Environment**: `VITE_CONTACT_ENDPOINT` (optional) — contact form endpoint.
+- **Status**: ✅ Builds cleanly (`npm run build`); not yet deployed.

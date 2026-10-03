@@ -16,15 +16,15 @@ export function Ecosystem() {
       <Nav active="/ecosystem" />
 
       <main id="main">
-        <section class="section" style="padding-top:calc(84px + clamp(40px,7vw,88px)); padding-bottom:clamp(48px,6vw,72px);">
-          <div class="container">
-            <div class="grid-12">
-              <div style="grid-column: 1 / span 12;" data-reveal>
-                <span class="eyebrow">The Ecosystem</span>
-                <h1 class="type-h1 balance" style="margin-top:24px; max-width:18ch;">
+        <section className="section" style={{ paddingTop: 'calc(84px + clamp(40px,7vw,88px))', paddingBottom: 'clamp(48px,6vw,72px)' }}>
+          <div className="container">
+            <div className="grid-12">
+              <div style={{ gridColumn: '1 / span 12' }} data-reveal>
+                <span className="eyebrow">The Ecosystem</span>
+                <h1 className="type-h1 balance" style={{ marginTop: '24px', maxWidth: '18ch' }}>
                   Not a portfolio of ventures. One architecture.
                 </h1>
-                <p class="type-body-lg pretty" style="margin-top:28px; max-width:60ch;">
+                <p className="type-body-lg pretty" style={{ marginTop: '28px', maxWidth: '60ch' }}>
                   Every entity inside AEON exists to solve one part of the same
                   problem — how capital moves from information, to decision, to
                   protected outcome. Read individually, they are companies.
@@ -38,18 +38,18 @@ export function Ecosystem() {
         <Rule />
 
         {/* Diagram */}
-        <section class="section">
-          <div class="container">
-            <div class="grid-12">
-              <div style="grid-column: 1 / span 4;" data-reveal>
-                <span class="eyebrow">Structure</span>
-                <h2 class="type-h2" style="margin-top:20px;">AEON → Decision → Risk → Protection → Infrastructure</h2>
-                <p class="type-body" style="margin-top:20px;">
+        <section className="section">
+          <div className="container">
+            <div className="grid-12">
+              <div style={{ gridColumn: '1 / span 4' }} data-reveal>
+                <span className="eyebrow">Structure</span>
+                <h2 className="type-h2" style={{ marginTop: '20px' }}>AEON → Decision → Risk → Protection → Infrastructure</h2>
+                <p className="type-body" style={{ marginTop: '20px' }}>
                   Select a node to read how each layer functions and where it sits
                   in the flow of a capital decision.
                 </p>
               </div>
-              <div style="grid-column: 6 / span 7;" data-reveal>
+              <div style={{ gridColumn: '6 / span 7' }} data-reveal>
                 <EcosystemDiagram />
               </div>
             </div>
@@ -59,23 +59,23 @@ export function Ecosystem() {
         <Rule />
 
         {/* Detailed entity list */}
-        <section class="section">
-          <div class="container">
+        <section className="section">
+          <div className="container">
             {ecosystem.map((node, i) => (
-              <div id={node.id} class="grid-12" style={`padding-block:clamp(48px,6vw,80px); ${i > 0 ? 'border-top:1px solid var(--c-line);' : ''}`} data-reveal>
-                <div style="grid-column: 1 / span 3;">
-                  <span class="type-mono text-signal" style="font-size:0.85rem;">{node.index}</span>
-                  <p class="type-caption" style="margin-top:14px;">{node.layer}</p>
+              <div key={node.id} id={node.id} className="grid-12" style={{ paddingBlock: 'clamp(48px,6vw,80px)', ...(i > 0 ? { borderTop: '1px solid var(--c-line)' } : {}) }} data-reveal>
+                <div style={{ gridColumn: '1 / span 3' }}>
+                  <span className="type-mono text-signal" style={{ fontSize: '0.85rem' }}>{node.index}</span>
+                  <p className="type-caption" style={{ marginTop: '14px' }}>{node.layer}</p>
                 </div>
-                <div style="grid-column: 4 / span 5;">
-                  <h3 class="type-h2" style="margin-bottom:20px;">{node.name}</h3>
-                  <p class="type-body-lg">{node.description}</p>
+                <div style={{ gridColumn: '4 / span 5' }}>
+                  <h3 className="type-h2" style={{ marginBottom: '20px' }}>{node.name}</h3>
+                  <p className="type-body-lg">{node.description}</p>
                 </div>
-                <div style="grid-column: 10 / span 3;">
-                  <p class="type-caption" style="margin-bottom:16px;">Focus areas</p>
-                  <ul role="list" style="display:flex; flex-direction:column; gap:12px;">
+                <div style={{ gridColumn: '10 / span 3' }}>
+                  <p className="type-caption" style={{ marginBottom: '16px' }}>Focus areas</p>
+                  <ul role="list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {node.domains.map((d) => (
-                      <li style="padding-bottom:12px; border-bottom:1px solid var(--c-line);" class="type-body">{d}</li>
+                      <li key={d} style={{ paddingBottom: '12px', borderBottom: '1px solid var(--c-line)' }} className="type-body">{d}</li>
                     ))}
                   </ul>
                 </div>
@@ -86,14 +86,14 @@ export function Ecosystem() {
 
         <Rule />
 
-        <section class="section" style="padding-block:clamp(72px,10vw,120px);">
-          <div class="container">
-            <div class="grid-12">
-              <div style="grid-column: 1 / span 12; text-align:center;" data-reveal>
-                <h2 class="type-h1 balance" style="max-width:20ch; margin-inline:auto;">
+        <section className="section" style={{ paddingBlock: 'clamp(72px,10vw,120px)' }}>
+          <div className="container">
+            <div className="grid-12">
+              <div style={{ gridColumn: '1 / span 12', textAlign: 'center' }} data-reveal>
+                <h2 className="type-h1 balance" style={{ maxWidth: '20ch', marginInline: 'auto' }}>
                   Interested in one layer of the ecosystem?
                 </h2>
-                <div style="margin-top:36px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                <div style={{ marginTop: '36px', display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <Btn href="/contact" variant="primary">Begin a conversation</Btn>
                   <Btn href="/thesis" variant="ghost" arrow={false}>Read the thesis</Btn>
                 </div>
