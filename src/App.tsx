@@ -1,39 +1,81 @@
-import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from 'react'
+import { Navigate, useLocation, useNavigationType } from 'react-router'
+import { SiteContext, createSiteContext } from './lib/site-context'
+import { getPreferredLanguage, rememberLanguage, resolveRoute } from './lib/routes'
+import Navigation from './components/Navigation'
+import Footer from './components/Footer'
+import Seo from './components/Seo'
+import HomePage from './pages/HomePage'
+import EcosystemPage from './pages/EcosystemPage'
+import InitiativePage from './pages/InitiativePage'
+import ThesisPage from './pages/ThesisPage'
+import AboutPage from './pages/AboutPage'
+import InsightsPage from './pages/InsightsPage'
+import ArticlePage from './pages/ArticlePage'
+import ContactPage from './pages/ContactPage'
+import PrivacyPage from './pages/PrivacyPage'
+import NotFoundPage from './pages/NotFoundPage'
 
-import { SiteChrome } from "./components/SiteChrome";
-import { initInteractions } from "./lib/interactions";
-import { Home } from "./pages/Home";
-import { Ecosystem } from "./pages/Ecosystem";
-import { Thesis } from "./pages/Thesis";
-import { About } from "./pages/About";
-import { Insights } from "./pages/Insights";
-import { InsightDetail } from "./pages/InsightDetail";
-import { Contact } from "./pages/Contact";
+function RouteEffects({ lang }: { lang: ReturnType<typeof resolveRoute>['lang'] }) {
+  const location = useLocation()
+  const navigationType = useNavigationType()
+  useEffect(() => rememberLanguage(lang), [lang])
+  useEffect(() => {
+    if (location.hash) {
+      let id: string
+      try {
+        id = decodeURIComponent(location.hash.slice(1))
+      } catch {
+        return
+      }
+      document.getElementById(id)?.scrollIntoView()
+    } else if (navigationType !== 'POP') {
+      window.scrollTo(0, 0)
+      document.getElementById('main')?.focus({ preventScroll: true })
+    }
+  }, [location.pathname, location.hash, location.key, navigationType])
+  return null
+}
 
 export default function App() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    // The interaction layer originally relied on full page loads. With
-    // client-side routing it must be re-armed after every route render, so the
-    // scroll-reveal, nav, diagram and form wiring attach to the new DOM.
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    return initInteractions();
-  }, [pathname]);
-
+  const location = useLocation()
+  const route = resolveRoute(location.pathname, getPreferredLanguage())
+  if (route.redirect)
+    return <Navigate replace to={`${route.redirect}${location.search}${location.hash}`} />
+  const site = createSiteContext(route)
+  const page = route.notFound ? (
+    <NotFoundPage />
+  ) : route.path === '' ? (
+    <HomePage />
+  ) : route.path === '/ecosystem' ? (
+    <EcosystemPage />
+  ) : route.path.startsWith('/ecosystem/') ? (
+    <InitiativePage />
+  ) : route.path === '/thesis' ? (
+    <ThesisPage />
+  ) : route.path === '/about' ? (
+    <AboutPage />
+  ) : route.path === '/insights' ? (
+    <InsightsPage />
+  ) : route.path.startsWith('/insights/') ? (
+    <ArticlePage />
+  ) : route.path === '/contact' ? (
+    <ContactPage key={route.lang} />
+  ) : (
+    <PrivacyPage />
+  )
   return (
-    <>
-      <SiteChrome />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/ecosystem" element={<Ecosystem />} />
-        <Route path="/thesis" element={<Thesis />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/insights" element={<Insights />} />
-        <Route path="/insights/:slug" element={<InsightDetail />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-    </>
-  );
+    <SiteContext.Provider value={site}>
+      <Seo />
+      <RouteEffects lang={route.lang} />
+      <a href="#main" className="skip-link">
+        {site.s.skip}
+      </a>
+      <Navigation />
+      <main id="main" tabIndex={-1}>
+        {page}
+      </main>
+      <Footer />
+    </SiteContext.Provider>
+  )
 }

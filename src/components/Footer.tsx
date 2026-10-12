@@ -1,64 +1,52 @@
-import { Link } from 'react-router-dom'
-import { footerLinks, site } from '../data/content'
+import { Link } from 'react-router'
+import { useSite } from '../lib/site-context'
+import { navPaths } from '../lib/routes'
+import LanguageLinks from './LanguageLinks'
 
-// Internal links use React Router; mailto: links stay as plain anchors.
-function FooterLink({ href, label }: { href: string; label: string }) {
-  if (href.startsWith('mailto:')) {
-    return (
-      <a href={href} className="footer__link">
-        {label}
-      </a>
-    )
-  }
+export default function Footer() {
+  const { s, href, initiatives } = useSite()
   return (
-    <Link to={href} className="footer__link">
-      {label}
-    </Link>
-  )
-}
-
-export function Footer() {
-  const year = new Date().getFullYear()
-  return (
-    <footer className="footer border-t" id="contact">
+    <footer className="footer border-t">
       <div className="container">
         <div className="footer__grid">
           <div>
-            <Link to="/" className="nav__mark" style={{ marginBottom: '18px', display: 'inline-flex' }}>
-              <span className="nav__mark-dot" aria-hidden="true"></span>
+            <Link className="nav__mark" to={href('')} dir="ltr">
               AEON
             </Link>
-            <p className="type-body" style={{ maxWidth: '34ch', marginTop: '18px' }}>
-              A financial and technology holding company building the systems
-              behind better decisions.
-            </p>
+            <p className="type-body footer-description">{s.formation}</p>
           </div>
-
           <div>
-            <p className="footer__col-title">Ecosystem</p>
-            {footerLinks.ecosystem.map((l) => (
-              <FooterLink key={l.href} href={l.href} label={l.label} />
+            <p className="footer__col-title">{s.nav[0]}</p>
+            {initiatives.map((e) => (
+              <Link key={e.id} className="footer__link" to={href(`/ecosystem/${e.id}`)}>
+                <bdi>{e.name}</bdi>
+              </Link>
             ))}
           </div>
-
           <div>
-            <p className="footer__col-title">Company</p>
-            {footerLinks.company.map((l) => (
-              <FooterLink key={l.href} href={l.href} label={l.label} />
+            <p className="footer__col-title">{s.company}</p>
+            {navPaths.slice(1).map((p, i) => (
+              <Link key={p} className="footer__link" to={href(p)}>
+                {s.nav[i + 1]}
+              </Link>
             ))}
+            <Link className="footer__link" to={href('/privacy')}>
+              {s.privacy}
+            </Link>
           </div>
-
           <div>
-            <p className="footer__col-title">Connect</p>
-            {footerLinks.connect.map((l) => (
-              <FooterLink key={l.href} href={l.href} label={l.label} />
-            ))}
+            <p className="footer__col-title">{s.language}</p>
+            <LanguageLinks />
+            <Link className="footer__link" to={href('/contact')}>
+              {s.conversation}
+            </Link>
           </div>
         </div>
-
         <div className="footer__bottom">
-          <span>© {year} {site.legalName}. All rights reserved.</span>
-          <span className="type-mono">Registered holding entity · Jurisdiction on request</span>
+          <span>
+            © {new Date().getUTCFullYear()} <bdi>AEON</bdi>. {s.rights}
+          </span>
+          <span>{s.initiative}</span>
         </div>
       </div>
     </footer>

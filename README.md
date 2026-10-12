@@ -1,99 +1,94 @@
-# AEON — Financial & Technology Holding Company
+# AEON — React + Vite
 
-## Project Overview
-- **Name**: AEON
-- **Goal**: An institutional digital headquarters for a financial & technology
-  holding company, built around the thesis that *"the quality of a decision
-  matters more than the mere availability of capital."*
-- **Positioning**: Institutional + Premium Minimalism + Architectural
-  Precision — deliberately distinct from generic fintech/SaaS/crypto/startup
-  visual language.
+Standard React + TypeScript application, built with Vite. React Router manages navigation. English, Turkish, Persian and Italian content, the existing AEON design and all 68 localized routes are retained. Persian uses RTL layout.
 
-## Currently Completed Features
-- **Design system** (`public/static/style.css`): full token set (obsidian
-  ground, single "Quantum Teal" signal color, fluid type scale, 12-col grid,
-  spacing/motion tokens), reusable component classes (nav, buttons, cards,
-  insight rows, ecosystem diagram, footer, form fields), scroll-reveal motion
-  system with `prefers-reduced-motion` support.
-- **Pages** (React 19 + React Router v7, client-rendered):
-  - `/` — Home: hero narrative, institutional introduction, philosophy
-    statement moment, ecosystem preview, capabilities grid, insights preview,
-    final CTA.
-  - `/ecosystem` — full ecosystem architecture with an interactive SVG node
-    diagram (AEON → Decision Intelligence → Risk → Protection →
-    Infrastructure) plus detailed entity write-ups (Axis, Sentinel, Aegis,
-    Financial Infrastructure).
-  - `/thesis` — the central thesis expanded into five editorial "movements."
-  - `/about` — why AEON exists, operating principles, institutional framing.
-  - `/insights` — editorial/research index with category tags.
-  - `/insights/:slug` — full long-form article template with related-article
-    footer.
-  - `/contact` — contact form (client-validated + server-validated) wired to
-    `/api/contact`.
-- **Contact form**: client-validated and submitted (via `src/lib/interactions.ts`)
-  to a configurable endpoint (`VITE_CONTACT_ENDPOINT`, default `/api/contact`).
-  No server is bundled — point it at your own API or a form service.
-- **SEO**: per-page `<title>`, meta description, canonical URL, Open Graph +
-  Twitter card metadata, generated OG image (`/static/og.jpg`), semantic
-  heading hierarchy throughout.
-- **Accessibility**: skip-link, visible focus states, `aria-live` form status,
-  keyboard-operable ecosystem diagram nodes, reduced-motion support,
-  sufficient contrast on the dark palette.
-- **Motion/interaction** (`src/lib/interactions.ts`, vanilla TS, no framework,
-  re-armed after every client-side route change):
-  scroll-based nav state, mobile menu, scroll-progress bar, IntersectionObserver
-  reveal animations, restrained custom cursor (desktop only), interactive
-  ecosystem diagram node/detail switching, async contact form submission.
-- **Data layer**: none bundled — the former Cloudflare D1 (`inquiries`) storage
-  was removed together with the Hono/Workers backend.
-- **Content** (`src/data/content.ts`): single source of truth for all copy —
-  no fabricated clients, revenue, partnerships, or certifications; ecosystem,
-  thesis, capabilities, about, and insights content all live here for easy
-  editing.
+## Run locally
 
-## URLs
-- **Local dev**: `npm run dev` — Vite dev server on port 3000 (with HMR).
-- **Preview**: `npm run preview` — serves the built `dist/` on port 3000.
-- **Production**: not yet deployed — see "Next Steps."
+Use Node.js 22.19+ or Node.js 24 LTS, with npm.
 
-## Data Architecture
-- **Contact model**: previously `inquiries` (id, name, email, organization,
-  topic, message, created_at) in Cloudflare D1 — removed with the server backend.
-- **Content model**: static TypeScript data module (`src/data/content.ts`)
-  driving all pages — no CMS at this stage.
+```sh
+npm ci
+npm run dev
+```
 
-## User Guide
-1. Visit `/` for the institutional narrative overview.
-2. Visit `/ecosystem` and click/hover the diagram nodes to read about each
-   entity (Axis, Sentinel, Aegis, Financial Infrastructure).
-3. Visit `/thesis` for the full philosophical argument.
-4. Visit `/insights` for editorial commentary, or open any article.
-5. Visit `/contact` to submit an inquiry — it is client-validated and posted to
-   the configured endpoint.
+Open the local address printed by Vite. To inspect the production build:
 
-## Features Not Yet Implemented
-- Production deployment (static host — see below).
-- CMS-backed Insights (currently static content in `content.ts`).
-- Admin/export view of inquiries (requires wiring a backend to the form).
-- Automated screenshot/visual regression testing (Playwright install timed
-  out in this sandbox session; manual `curl` route testing was used instead).
+```sh
+npm run build
+npm run preview
+```
 
-## Recommended Next Steps
-1. **Deploy**: run `npm run build` and publish `dist/` to any static host
-   (configure an SPA fallback to `index.html`). No server or Cloudflare
-   account is required.
-2. Do a final visual QA pass with real browser screenshots (device widths:
-   390px, 768px, 1440px) once Playwright/Chromium can be installed without
-   network timeout, to confirm pixel-level spacing/hierarchy.
-3. Consider wiring `/insights` to a real content source if the editorial
-   cadence will be ongoing.
-4. Add a lightweight admin/export view for `inquiries` if the team wants to
-   act on contact submissions directly from the site.
+`build` is the usual Vite SPA build. Its output is `dist/`. Configure the host to serve `index.html` for application routes so refreshes and direct links work.
 
-## Deployment
-- **Stack**: React 19 + React Router v7 + TypeScript + Vite (client-side SPA).
-- **Build output**: `dist/` — deploy as a static site on any static host.
-- **SPA fallback**: configure the host to rewrite unknown paths to
-  `/index.html` so deep links (e.g. `/ecosystem`, `/insights/:slug`) resolve.
-- **Environment**: `VITE_CONTACT_ENDPOINT` (optional) — contact form endpoint.
-- **Status**: ✅ Builds cleanly (`npm run build`); not yet deployed.
+## Optional static pages for search and social previews
+
+```sh
+npm run build:prerender
+npm run preview
+```
+
+This first runs the same Vite build, then adds ready HTML for all 68 localized pages, a sitemap, robots.txt and localized missing-page templates to `dist/`. The browser hydrates the HTML with React. Rendering happens only during the build; the deployed website needs no application server. The supplied `dist/` uses this option. Keep the whole folder, including its `assets/` directory.
+
+The included `vercel.json` uses this build, enables clean HTML URLs and supplies a SPA fallback. Other hosts must serve existing static files first, resolve `/en/about` to `/en/about.html` (and directory home pages to `index.html`), then rewrite remaining application paths to the root `index.html`. For Nginx, the corresponding rule is `try_files $uri $uri.html $uri/ /index.html;`. Configure real HTTP 404 responses on the host if you need them; client routing alone cannot set the HTTP status. The default Vite development and preview servers return the SPA fallback for unknown routes. See [Vercel's configuration documentation](https://vercel.com/docs/project-configuration/vercel-json#cleanurls) for clean URL behavior.
+
+## Public configuration
+
+Copy `.env.example` to `.env.local`, edit it, then rebuild:
+
+```dotenv
+VITE_SITE_URL=https://aeon-st.vercel.app
+VITE_CONTACT_EMAIL=
+VITE_CONTACT_ENDPOINT=
+```
+
+`VITE_SITE_URL` sets the canonical origin and sitemap. All `VITE_` values are public and become part of the browser bundle. Never put API keys, credentials or database URLs in them.
+
+The contact form is disabled until `VITE_CONTACT_ENDPOINT` is configured. There is no API, database or mail service bundled with this frontend. An optional direct email link appears when `VITE_CONTACT_EMAIL` is set.
+
+## Contact service contract
+
+The optional endpoint receives `POST` JSON:
+
+```json
+{
+  "name": "Visitor",
+  "email": "visitor@example.com",
+  "organization": "Optional organization",
+  "topic": "general",
+  "purpose": "development",
+  "message": "Inquiry text",
+  "language": "en",
+  "website": ""
+}
+```
+
+It must return a successful HTTP status and JSON `{"ok":true}` **only after accepting/storing the inquiry**. Other responses and network failures show a localized failure message and preserve the fields. Requests time out after 15 seconds. An endpoint on another origin must allow the website's origin and the JSON POST/preflight through CORS. Validate field lengths and allowed values, handle the honeypot, and apply spam controls on that service. Finalize retention/deletion procedures and align the privacy copy with the chosen service before enabling public inquiries.
+
+## Project structure
+
+```text
+index.html               Vite entry document
+src/main.tsx             React entry point
+src/App.tsx              Application and page routing
+src/components/          Navigation, footer, metadata and shared UI
+src/pages/               Individual page components
+src/data/                Translations and editorial articles
+src/lib/                 Routes, settings and contact-service integration
+src/styles/              Existing design and responsive/RTL styles
+public/static/           Brand favicon and social image
+scripts/prerender.mjs    Optional build-time HTML export
+tests/                   Rendering, routing and form checks
+dist/                    Ready production output
+```
+
+Content URLs use `/en/`, `/tr/`, `/fa/`, `/it/`. Changing language keeps the current page, query string and hash. The language preference is stored locally. Root and recognized legacy URLs redirect in the browser to the saved language, then a supported browser language, otherwise English. Language-prefixed URLs always take precedence.
+
+## Checks
+
+```sh
+npm run typecheck
+npm run lint
+npm test
+```
+
+The migration removes Hono, Wrangler, Cloudflare worker bindings, D1 migrations and server-specific deployment scripts. If an existing deployment has stored inquiries, migrate or preserve those separately; this package does not export database records.
